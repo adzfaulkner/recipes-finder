@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+    frontend_dev:
+        build: 
+            context: ./frontend
+            dockerfile: Dockerfile-dev
+        ports: 
+            - "5000:8080"
+        volumes:
+            - ./frontend/src:/app
+
+    mongo-express:
+        image: mongo-express
+        restart: always
+        env_file: ./.env
+        ports:
+            - 8082:8081
+        environment:
+            - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_ROOT_USERNAME}
+            - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_ROOT_PASSWORD}  
+            - ME_CONFIG_MONGODB_SERVER=mongo
+        networks:
+            - intersect-backend         
+            
+networks:
+    intersect-backend :
+        external:
+            name: intersect-backend               

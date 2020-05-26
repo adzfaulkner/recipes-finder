@@ -1,0 +1,108 @@
+version: '3.7'
+
+services:
+    es:
+        build: ./es
+        ports: 
+            - 9200:9200
+        environment: 
+            discovery.type: single-node 
+        networks:
+            - intersect-backend      
+        healthcheck:
+            test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+            interval: 30s
+            timeout: 30s
+            retries: 3      
+            
+    mongo:
+        image: mongo
+        restart: always
+        env_file: ./.env
+        volumes: 
+            - ./mongo/data:/data/db
+            - ./mongo/init:/docker-entrypoint-initdb.d:ro       
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+            MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+            MONGO_NON_ROOT_USERNAME: ${MONGO_USERNAME}
+            MONGO_NON_ROOT_PASSWORD: ${MONGO_PASSWORD}
+        networks:
+            - intersect-backend                    
+
+    rabbitmq:
+        image: rabbitmq:3-management
+        ports: 
+            - 15672:15672
+            - 5672:5672     
+        networks:
+            - intersect-backend
+        environment: 
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:15672"]
+            interval: 30s
+            timeout: 10s
+            retries: 5                               
+
+    consumer:
+        build: 
+            context: ./src
+            dockerfile: Dockerfile-prod
+            args: 
+                build_dir: ./consumer
+        restart: always         
+        env_file: .env
+        environment: 
+            MONGO_HOST: mongo
+            MONGO_DATABASE: ${MONGO_DATABASE}
+            MONGO_USERNAME: ${MONGO_USERNAME}
+            MONGO_PASSWORD: ${MONGO_PASSWORD}
+            RABBITMQ_HOST: rabbitmq
+            RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            ES_HOST: es
+                
+        networks:
+            - intersect-backend  
+        depends_on: 
+            - rabbitmq
+            - mongo
+            - es
+            
+    server:
+        build: 
+            context: ./src
+            dockerfile: Dockerfile-prod
+            args: 
+                build_dir: ./server
+        restart: always   
+        env_file: .env    
+        environment: 
+            MONGO_HOST: mongo
+            MONGO_DATABASE: ${MONGO_DATABASE}
+            MONGO_USERNAME: ${MONGO_USERNAME}
+            MONGO_PASSWORD: ${MONGO_PASSWORD} 
+            RABBITMQ_HOST: rabbitmq
+            RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            ES_HOST: es            
+        networks:
+            - intersect-backend 
+        ports: 
+            - "8081:8080"  
+
+    frontend_prod:
+        build: ./frontend
+        restart: always          
+        networks:
+            - intersect-backend   
+        ports: 
+            - "8080:8080"               
+
+networks:
+    intersect-backend :
+        external:
+            name: intersect-backend    

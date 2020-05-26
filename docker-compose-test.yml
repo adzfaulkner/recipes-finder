@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+    test_es:
+        build:
+            context: ./es
+            dockerfile: Dockerfile
+        environment: 
+            discovery.type: single-node 
+        networks:
+            - test-intersect-backend           
+            
+    test_mongo:
+        image: mongo
+        restart: always
+        env_file: ./.env    
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+            MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+            MONGO_NON_ROOT_USERNAME: ${MONGO_USERNAME}
+            MONGO_NON_ROOT_PASSWORD: ${MONGO_PASSWORD}
+        networks:
+            - test-intersect-backend                    
+
+    test_rabbitmq:
+        image: rabbitmq:3-management
+        networks:
+            - test-intersect-backend
+        environment: 
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+            
+    test_server:
+        build: 
+            context: ./src
+            dockerfile: Dockerfile-prod
+            args: 
+                build_dir: ./server
+        env_file: .env    
+        environment: 
+            MONGO_HOST: test_mongo
+            MONGO_DATABASE: ${MONGO_DATABASE}
+            MONGO_USERNAME: ${MONGO_USERNAME}
+            MONGO_PASSWORD: ${MONGO_PASSWORD} 
+            RABBITMQ_HOST: test_rabbitmq
+            RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            ES_HOST: test_es                       
+        networks:
+            - test-intersect-backend              
+
+    test:
+        build: 
+            context: ./src
+            dockerfile: Dockerfile-test     
+        env_file: .env
+        environment: 
+            MONGO_HOST: test_mongo
+            MONGO_DATABASE: ${MONGO_DATABASE}
+            MONGO_USERNAME: ${MONGO_USERNAME}
+            MONGO_PASSWORD: ${MONGO_PASSWORD}
+            RABBITMQ_HOST: test_rabbitmq
+            RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+            RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+            ES_HOST: test_es
+            WAIT_HOSTS: test_mongo:27017, test_es:9200, test_server:8080, test_rabbitmq:5672
+            WAIT_HOSTS_TIMEOUT: 300
+            WAIT_SLEEP_INTERVAL: 30
+            WAIT_HOST_CONNECT_TIMEOUT: 30               
+        networks:
+            - test-intersect-backend     
+
+networks:
+    test-intersect-backend :
+        external:
+            name: test-intersect-backend    

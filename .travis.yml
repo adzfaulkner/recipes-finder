@@ -1,0 +1,30 @@
+language: bash
+
+sudo: required
+
+services:
+  - docker  
+
+env:
+  - DOCKER_COMPOSE_VERSION: 1.25.5    
+
+before_install:
+  - cp .env.sample .env
+  - sed -i 's/MONGO_ROOT_USERNAME=/MONGO_ROOT_USERNAME=root/g' .env
+  - sed -i 's/MONGO_ROOT_PASSWORD=/MONGO_ROOT_PASSWORD=example/g' .env
+  - sed -i 's/MONGO_DATABASE=/MONGO_DATABASE=recipes/g' .env
+  - sed -i 's/MONGO_USERNAME=/MONGO_USERNAME=recipes/g' .env
+  - sed -i 's/MONGO_PASSWORD=/MONGO_PASSWORD=recipes/g' .env
+  - sed -i 's/RABBITMQ_USERNAME=/RABBITMQ_USERNAME=guest/g' .env  
+  - sed -i 's/RABBITMQ_PASSWORD=/RABBITMQ_PASSWORD=guest/g' .env
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker-compose --version  
+  - docker network create test-intersect-backend
+  - ls -lah ./es
+
+script:
+  - docker-compose -f ./docker-compose-test.yml build  
+  - docker-compose -f ./docker-compose-test.yml up --abort-on-container-exit

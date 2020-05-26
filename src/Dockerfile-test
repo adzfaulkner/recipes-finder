@@ -1,0 +1,19 @@
+FROM golang:1.13-alpine
+
+RUN set -ex; \
+    apk update; \
+    apk add --no-cache git
+
+WORKDIR /app
+COPY . .
+
+RUN go get -d -v ./...
+RUN go install -v ./...
+
+ADD ./wait /wait
+RUN chmod +x /wait
+
+CMD /wait \
+    && CGO_ENABLED=0 go test ./... -cover -v \
+    && cd ./es && CGO_ENABLED=0 go test -cover -v \
+    && cd ../finder && CGO_ENABLED=0 go test -cover -v

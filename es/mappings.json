@@ -1,0 +1,39 @@
+{
+    "settings": {      
+        "analysis": {
+            "normalizer": {
+                "lowercase_normalizer": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": ["lowercase"]
+                }
+            }     
+        }
+    },
+	"mappings": {
+		"properties": {
+			"ingredients": {
+				"type": "nested",
+				"properties": {
+					"item": {
+                        "type": "keyword",
+                        "doc_values": true,
+                        "normalizer": "lowercase_normalizer"
+					},
+					"quantity": {
+						"type": "integer"
+					},
+					"measure": {
+						"type": "text"
+					}
+				}
+			},
+			"title": {
+				"type": "text"
+			},
+			"serves": {
+				"type": "integer"
+			}
+		}
+	}
+}
