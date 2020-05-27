@@ -1,4 +1,4 @@
-# Recipe Finder App
+# Recipe Finder App [![Build Status](https://travis-ci.com/adzfaulkner/recipes-finder.svg?branch=master)](https://travis-ci.com/adzfaulkner/recipes-finder)
 
 What else you can do whilst in lockdown other than try to extend your skills? Not much. For a long time, I wanted to delve into new tech such as GoLang, VueJS hence I created this app which finds you recipes for the ingredients you input.
 
