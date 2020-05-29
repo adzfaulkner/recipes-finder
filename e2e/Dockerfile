@@ -2,7 +2,7 @@ FROM cypress/base:12
 
 WORKDIR /e2e
 
-COPY package.json cypress.json ./
+COPY package*.json cypress.json ./
 
 RUN npm i
 
