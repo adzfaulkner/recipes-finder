@@ -23,6 +23,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - docker-compose --version  
   - docker network create test-intersect-backend
+  - docker network create intersect-backend
 
 script:  
   - docker-compose -f ./docker-compose-test.yml up --abort-on-container-exit
