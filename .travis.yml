@@ -17,12 +17,12 @@ before_install:
   - sed -i 's/MONGO_PASSWORD=/MONGO_PASSWORD=recipes/g' .env
   - sed -i 's/RABBITMQ_USERNAME=/RABBITMQ_USERNAME=guest/g' .env  
   - sed -i 's/RABBITMQ_PASSWORD=/RABBITMQ_PASSWORD=guest/g' .env
-  - sed -i 's/CYPRESS_baseUrl=/CYPRESS_baseUrl=http://frontend_prod:8080/g' .env
+  - sed -i 's,CYPRESS_baseUrl=,CYPRESS_baseUrl=http://frontend_prod:8080,g' .env
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  - docker-compose --version  
+  - docker-compose --version
   - docker network create test-intersect-backend
   - docker network create intersect-backend
 
