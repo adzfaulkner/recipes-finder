@@ -1,5 +1,4 @@
 {
-  "baseUrl": "http://host.docker.internal:5000",
   "pluginsFile": false,
   "supportFile": false,
   "fixturesFolder": false

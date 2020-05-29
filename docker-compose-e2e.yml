@@ -7,7 +7,8 @@ services:
             - ./e2e/cypress:/e2e/cypress
             - /e2e/node_modules
         environment: 
-            WAIT_HOSTS: mongo:27017, es:9200, server:8080, rabbitmq:5672
+            CYPRESS_baseUrl: ${CYPRESS_baseUrl}
+            WAIT_HOSTS: mongo:27017, es:9200, server:8080, rabbitmq:5672, frontend_prod:8080
             WAIT_HOSTS_TIMEOUT: 300
             WAIT_SLEEP_INTERVAL: 30
             WAIT_HOST_CONNECT_TIMEOUT: 30 
