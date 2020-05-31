@@ -93,6 +93,7 @@ services:
             context: ./frontend
             args:
                 server_port: ${SERVER_PORT}
+                api_url: ${API_URL}
         restart: always
         env_file: ./.env            
         ports: 

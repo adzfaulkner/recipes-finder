@@ -7,8 +7,9 @@ RUN npm install -g http-server
 WORKDIR /app
 
 ARG server_port
+ARG api_url
 
-RUN echo "VUE_APP_SERVER_PORT=${server_port}" > .env
+RUN echo -e "VUE_APP_SERVER_PORT=${server_port}\nVUE_APP_API_URL=${api_url}" > .env
 
 # copy both 'package.json' and 'package-lock.json' (if available)
 COPY src/package*.json ./

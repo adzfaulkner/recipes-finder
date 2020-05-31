@@ -148,14 +148,14 @@ export default {
 
       let apiUrl;
 
-      console.log(process.env);
+      const {VUE_APP_API_URL, VUE_APP_SERVER_PORT} = process.env;
 
       //indicates that this is being executed as part of a CI test
-      if (process.env.VUE_APP_SERVER_PORT === "8080") {
-        apiUrl = 'sever:8080';
+      if (VUE_APP_API_URL !== "") {
+        apiUrl = VUE_APP_API_URL;
       } else {
         const { location: { hostname } } = window;
-        apiUrl = `${hostname}:${process.env.VUE_APP_SERVER_PORT}`;
+        apiUrl = `${hostname}:${VUE_APP_SERVER_PORT}`;
       }
 
       axios
