@@ -20,8 +20,7 @@ RUN npm install
 COPY src/. .
 
 # build app for production with minification
-RUN npm run build \
-    && /wait
+RUN npm run build
 
 EXPOSE 8080
 
