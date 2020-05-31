@@ -18,6 +18,8 @@ before_install:
   - sed -i 's/RABBITMQ_USERNAME=/RABBITMQ_USERNAME=guest/g' .env  
   - sed -i 's/RABBITMQ_PASSWORD=/RABBITMQ_PASSWORD=guest/g' .env
   - sed -i 's,CYPRESS_baseUrl=,CYPRESS_baseUrl=http://frontend_prod:8080,g' .env
+  - sed -i 's/FRONTEND_PROD_PORT=/FRONTEND_PROD_PORT=8080/g' .env
+  - sed -i 's/SERVER_PORT=/SERVER_PORT=8080/g' .env
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose

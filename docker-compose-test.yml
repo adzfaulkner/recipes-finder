@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 services:
     test_es:
@@ -24,7 +24,7 @@ services:
             - test-intersect-backend                    
 
     test_rabbitmq:
-        image: rabbitmq:3-management
+        image: rabbitmq:3-alpine
         networks:
             - test-intersect-backend
         environment: 
@@ -37,7 +37,7 @@ services:
             dockerfile: Dockerfile-prod
             args: 
                 build_dir: ./server
-        env_file: .env    
+        env_file: .env
         environment: 
             MONGO_HOST: test_mongo
             MONGO_DATABASE: ${MONGO_DATABASE}

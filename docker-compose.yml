@@ -3,8 +3,6 @@ version: '3.7'
 services:
     es:
         build: ./es
-        ports: 
-            - 9200:9200
         environment: 
             discovery.type: single-node 
         networks:
@@ -32,10 +30,7 @@ services:
             - intersect-backend                    
 
     rabbitmq:
-        image: rabbitmq:3-management
-        ports: 
-            - 15672:15672
-            - 5672:5672     
+        image: rabbitmq:3-alpine
         networks:
             - intersect-backend
         environment: 
@@ -64,7 +59,6 @@ services:
             RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
             RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
             ES_HOST: es
-                
         networks:
             - intersect-backend  
         depends_on: 
@@ -92,15 +86,19 @@ services:
         networks:
             - intersect-backend 
         ports: 
-            - "8081:8080"  
+            - ${SERVER_PORT}:8080  
 
     frontend_prod:
-        build: ./frontend
-        restart: always          
-        networks:
-            - intersect-backend   
+        build: 
+            context: ./frontend
+            args:
+                server_port: ${SERVER_PORT}
+        restart: always
+        env_file: ./.env            
         ports: 
-            - "8080:8080"               
+            - ${FRONTEND_PROD_PORT}:8080  
+        networks:
+            - intersect-backend                               
 
 networks:
     intersect-backend :

@@ -146,12 +146,22 @@ export default {
 
       this.showLoading = true;
 
-      const { location: { hostname } } = window;
+      let apiUrl;
+
+      console.log(process.env);
+
+      //indicates that this is being executed as part of a CI test
+      if (process.env.VUE_APP_SERVER_PORT === "8080") {
+        apiUrl = 'sever:8080';
+      } else {
+        const { location: { hostname } } = window;
+        apiUrl = `${hostname}:${process.env.VUE_APP_SERVER_PORT}`;
+      }
 
       axios
-        .post(`http://${hostname}:8081/search`, formValues)
+        .post(`http://${apiUrl}/search`, formValues)
         .then(({data: {id}}) => {
-          pollForResults(() => axios.get(`http://${hostname}:8081/results?id=${id}`, formValues), 1000000, 2000)
+          pollForResults(() => axios.get(`http://${apiUrl}/results?id=${id}`, formValues), 1000000, 2000)
             .then(({good_results, partial_results}) => {
               this.showLoading = false;
 
